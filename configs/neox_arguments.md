@@ -1227,6 +1227,20 @@ Training Arguments
 
     List of paths to validation reward datasets
 
+- **valid_data_names**: list
+
+    Default = None
+
+    Optional names for validation dataset subsets when eval_loss_logging uses separate logging.
+    Defaults to valid_0, valid_1, ...
+
+- **test_data_names**: list
+
+    Default = None
+
+    Optional names for test dataset subsets when eval_loss_logging uses separate logging.
+    Defaults to test_0, test_1, ...
+
 - **pos_train_data_paths**: list
 
     Default = None
@@ -1307,6 +1321,14 @@ Training Arguments
 
     List of 'weights' that decide how often to sample from each test dataset when blending datasets. If None, defaults to equal weighting.
     Should be a list the same length as `test_data_paths`
+
+- **eval_loss_logging**: typing.Literal['blended', 'separate', 'blended_and_separate']
+
+    Default = blended
+
+    Validation/test loss logging mode. "blended" preserves the historical blended metric;
+    "separate" logs each validation/test subset independently; "blended_and_separate"
+    logs each subset and synthesizes a blended metric from subset losses.
 
 - **weight_by_num_documents**: bool
 

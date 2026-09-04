@@ -1362,6 +1362,43 @@ class NeoXArgs(*BASE_CLASSES):
         if self.test_data_paths is not None:
             assert len(self.test_data_paths) == len(self.test_data_weights)
 
+        eval_subset_path_fields = {
+            "valid": self.valid_data_paths or self.pos_valid_data_paths,
+            "test": self.test_data_paths or self.pos_test_data_paths,
+        }
+        for split, paths in eval_subset_path_fields.items():
+            names = getattr(self, f"{split}_data_names")
+            if names is None:
+                continue
+            if paths is None:
+                raise ValueError(
+                    f"{split}_data_names requires explicit {split}_data_paths."
+                )
+            if len(names) != len(paths):
+                raise ValueError(
+                    f"{split}_data_names length ({len(names)}) must match "
+                    f"{split}_data_paths length ({len(paths)})."
+                )
+            if len(set(names)) != len(names):
+                raise ValueError(f"{split}_data_names entries must be unique.")
+            if not all(isinstance(name, str) and name for name in names):
+                raise ValueError(
+                    f"{split}_data_names entries must be non-empty strings."
+                )
+
+        if self.eval_loss_logging != "blended":
+            if self.data_path is not None:
+                raise ValueError(
+                    "eval_loss_logging='separate' or 'blended_and_separate' requires "
+                    "explicit train/valid/test data path lists; data_path plus split only "
+                    "supports blended evaluation."
+                )
+            if self.valid_data_paths is None and self.pos_valid_data_paths is None:
+                raise ValueError(
+                    "eval_loss_logging='separate' or 'blended_and_separate' requires "
+                    "explicit validation dataset paths."
+                )
+
         return True
 
     def validate_types(self):
